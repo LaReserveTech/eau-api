@@ -1,12 +1,15 @@
 import { initCookies } from "@/scrapper/lib/cookies";
-import { searchCity } from "@/scrapper/lib/search";
 import { getDepartments } from "@/scrapper/search/region";
+import { regions } from "@/scrapper/data/regions";
 
 (async () => {
     await initCookies();
 
-    await getDepartments("02");
-    //await searchCity();
+    for (const region of Object.keys(regions)) {
+        const departments = await getDepartments(region);
+        console.log(departments);
+    }
+
 })().then(() => {
     console.log("done!");
 });

@@ -1,6 +1,6 @@
 import axios from "axios";
-import { load } from "cheerio";
-import { decodeDom, saveDom } from "@/scrapper/lib/utils";
+import { JSDOM } from "jsdom";
+import { decodeDom } from "@/scrapper/lib/utils";
 
 export async function getDepartments(regionId: string) {
     const request = await axios({
@@ -10,13 +10,21 @@ export async function getDepartments(regionId: string) {
 
     const result = decodeDom(await request.data);
 
-    saveDom(result, "department.html");
-
     return departmentsExtractor(result);
 }
 
 function departmentsExtractor(dom: string) {
-    const $ = load(dom);
+    const document = (new JSDOM(dom)).window.document;
+    const departments = Object.fromEntries(
+        [...document
+            .querySelector("[name='departement']")
+            .querySelectorAll("option")
+        ]
+            .map((option) => [
+                option.value,
+                option.textContent?.trim()
+            ])
+    );
 
-    console.log(dom);
+    return departments as Record<string, string>;
 }
