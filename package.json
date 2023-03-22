@@ -9,6 +9,7 @@
     "keywords": [],
     "author": "Hugo Attal",
     "dependencies": {
+        "dotenv": "^16.0.3",
         "fastify": "^4.15.0",
         "mongodb": "^5.1.0",
         "mongoose": "^7.0.2",
