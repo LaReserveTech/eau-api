@@ -9,16 +9,25 @@ export async function getDepartments(regionId: string) {
     });
 
     const result = decodeDom(await request.data);
+    const document = (new JSDOM(result)).window.document;
 
-    return departmentsExtractor(result);
+    return departmentsExtractor(document);
+
+/*
+    config: {
+        idRegion: (document.querySelector("[name='idRegion']") as HTMLInputElement)?.value,
+            posPLV: (document.querySelector("[name='posPLV']") as HTMLInputElement)?.value,
+            reseau: document.querySelector("[name='reseau']")?.querySelector("option")?.value,
+            usd: (document.querySelector("[name='usd']") as HTMLInputElement)?.value
+    },
+ */
 }
 
-function departmentsExtractor(dom: string) {
-    const document = (new JSDOM(dom)).window.document;
+function departmentsExtractor(document: Document) {
     const departments = Object.fromEntries(
         [...document
             .querySelector("[name='departement']")
-            .querySelectorAll("option")
+            ?.querySelectorAll("option") || []
         ]
             .map((option) => [
                 option.value,
