@@ -2,7 +2,7 @@ import { initCookies } from "@/scrapper/lib/cookies";
 import { getDepartments } from "@/scrapper/search/region";
 import { regions } from "@/scrapper/data/regions";
 import { getCities } from "@/scrapper/search/department";
-import { getCityData, getNetworks } from "@/scrapper/search/city";
+import { getNetworks } from "@/scrapper/search/city";
 import { getNetworkData } from "@/scrapper/search/network";
 
 (async () => {
@@ -13,6 +13,7 @@ import { getNetworkData } from "@/scrapper/search/network";
     const networks = await getNetworks({ city: "75056", department: "075", region: "11" });
     console.log(networks);
     const networkData = await getNetworkData({ city: "75056", department: "075", network: "075000227_075", region: "11" });
+    console.log(networkData);
 
 })().then(() => {
     console.log("done!");

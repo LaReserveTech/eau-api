@@ -13,15 +13,6 @@ export async function getDepartments({ region }: {region: string}) {
     const document = (new JSDOM(dom)).window.document;
 
     return departmentsExtractor(document);
-
-/*
-    config: {
-        idRegion: (document.querySelector("[name='idRegion']") as HTMLInputElement)?.value,
-            posPLV: (document.querySelector("[name='posPLV']") as HTMLInputElement)?.value,
-            reseau: document.querySelector("[name='reseau']")?.querySelector("option")?.value,
-            usd: (document.querySelector("[name='usd']") as HTMLInputElement)?.value
-    },
- */
 }
 
 function departmentsExtractor(document: Document) {
