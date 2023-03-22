@@ -1,15 +1,17 @@
 import axios from "axios";
 import { JSDOM } from "jsdom";
-import { decodeDom } from "@/scrapper/lib/utils";
 import { scrapperStore } from "@/scrapper/store";
+import { decodeDom, saveDom } from "@/scrapper/lib/utils";
 
-export async function getCities({ department, region }: {department: string; region: string}) {
+export async function getNetworkData({ city, department, network, region }: {city: string; department: string; network: string; region: string}) {
     const request = await axios(
         {
             data: {
+                communeDepartement: city,
                 departement: department,
                 idRegion: region,
-                methode: "changerDepartement"
+                methode: "rechercher",
+                reseau: network
             },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -23,23 +25,7 @@ export async function getCities({ department, region }: {department: string; reg
     );
 
     const dom = decodeDom(await request.data);
-    //saveDom(dom, "cities.html");
+    //saveDom(dom, "network.html");
     const document = (new JSDOM(dom)).window.document;
-
-    return citiesExtractor(document);
 }
 
-function citiesExtractor(document: Document) {
-    const cities = Object.fromEntries(
-        [...document
-            .querySelector("[name='communeDepartement']")
-            ?.querySelectorAll("option") || []
-        ]
-            .map((option) => [
-                option.value,
-                option.textContent?.trim()
-            ])
-    );
-
-    return cities as Record<string, string>;
-}

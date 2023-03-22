@@ -2,14 +2,15 @@ import axios from "axios";
 import { JSDOM } from "jsdom";
 import { decodeDom } from "@/scrapper/lib/utils";
 
-export async function getDepartments(regionId: string) {
+export async function getDepartments({ region }: {region: string}) {
     const request = await axios({
         responseType: "arraybuffer",
-        url: `https://orobnat.sante.gouv.fr/orobnat/afficherPage.do?methode=menu&usd=AEP&idRegion=${ regionId }`
+        url: `https://orobnat.sante.gouv.fr/orobnat/afficherPage.do?methode=menu&usd=AEP&idRegion=${ region }`
     });
 
-    const result = decodeDom(await request.data);
-    const document = (new JSDOM(result)).window.document;
+    const dom = decodeDom(await request.data);
+    //saveDom(dom, "departments.html");
+    const document = (new JSDOM(dom)).window.document;
 
     return departmentsExtractor(document);
 

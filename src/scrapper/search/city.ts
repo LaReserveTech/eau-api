@@ -1,31 +1,48 @@
 import axios from "axios";
+import { JSDOM } from "jsdom";
 import { scrapperStore } from "@/scrapper/store";
+import { decodeDom } from "@/scrapper/lib/utils";
 
-export async function getCity() {
-    const searchRequest = await axios(
+export async function getNetworks({ city, department, region }: {city: string; department: string; region: string}) {
+    const request = await axios(
         {
             data: {
-                communeDepartement: 91001,
-                departement: 91,
-                idRegion: 11,
-                methode: "rechercher",
-                posPLV: 0,
-                reseau: "091000569_091",
-                usd: "AEP"
+                communeDepartement: city,
+                departement: department,
+                idRegion: region,
+                methode: "changerCommune"
             },
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
                 Cookie: scrapperStore.cookie
             },
             method: "POST",
+            responseType: "arraybuffer",
             url: "https://orobnat.sante.gouv.fr/orobnat/rechercherResultatQualite.do",
             withCredentials: true
         }
     );
 
-    const result = await searchRequest.data;
+    const dom = decodeDom(await request.data);
+    //saveDom(dom, "networks.html");
+    const document = (new JSDOM(dom)).window.document;
 
-    console.log(result);
-
-    return result;
+    return networksExtractor(document);
 }
+
+
+function networksExtractor(document: Document) {
+    const networks = Object.fromEntries(
+        [...document
+            .querySelector("[name='reseau']")
+            ?.querySelectorAll("option") || []
+        ]
+            .map((option) => [
+                option.value,
+                option.textContent?.trim()
+            ])
+    );
+
+    return networks as Record<string, string>;
+}
+
