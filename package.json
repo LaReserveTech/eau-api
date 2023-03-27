@@ -4,7 +4,8 @@
     "description": "",
     "main": "src/index.ts",
     "scripts": {
-        "dev:scrapper": "ts-node -T -r tsconfig-paths/register src/scrapper/index.ts"
+        "dev:scrapper": "ts-node -T -r tsconfig-paths/register src/scrapper/index.ts",
+        "dev:test": "vitest --ui"
     },
     "keywords": [],
     "author": "Hugo Attal",
@@ -17,7 +18,8 @@
         "mongodb": "^5.1.0",
         "mongoose": "^7.0.2",
         "ts-node": "^10.9.1",
-        "tsconfig-paths": "^4.1.2"
+        "tsconfig-paths": "^4.1.2",
+        "vite-tsconfig-paths": "^4.0.7"
     },
     "devDependencies": {
         "@types/jsdom": "^21.1.0",
