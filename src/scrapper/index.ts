@@ -6,26 +6,21 @@ import { regions } from "@/scrapper/data/regions";
 import { getCities } from "@/scrapper/search/department";
 import { getNetworks } from "@/scrapper/search/city";
 import { getNetworkData } from "@/scrapper/search/network";
+import { upsertNetwork } from "@/services/network/lib";
+import { upsertCity } from "@/services/city/lib";
+import { upsertSampling } from "@/services/sampling/lib";
+import { closeDatabase, connectDatabase } from "@/database";
 
 (async () => {
     await initCookies();
     await loopScrapping();
-    /*
-
-    const cities = await getCities({ department: "075", region: "11" });
-    console.log(cities);
-    const networks = await getNetworks({ city: "75056", department: "075", region: "11" });
-    console.log(networks);
-    const networkData = await getNetworkData({ city: "75056", department: "075", network: "075000227_075", region: "11" });
-    console.log(networkData);
-
-     */
-
 })().then(() => {
     console.log("done!");
 });
 
 async function loopScrapping() {
+    await connectDatabase();
+
     for (const [region, regionName] of Object.entries(regions)) {
         console.log(`Fetching region "${ regionName }"`);
         const departments = await getDepartments({ region });
@@ -42,14 +37,13 @@ async function loopScrapping() {
                     console.log(`- - - Fetching network "${ networkName }"`);
                     const networkData = await getNetworkData({ city, department, network, region });
 
-                    console.log(networkData);
-
-                    const data = JSON.stringify(networkData);
-                    fs.writeFileSync(path.join(__dirname, "./temp/data.json"), data, { encoding: "utf8" });
-
-                    return;
+                    await upsertNetwork(network, networkName);
+                    await upsertCity({ name: cityName, code: city, department, departmentName, region, regionName }, Object.keys(networks));
+                    await upsertSampling(networkData.info.sampling.date, network, networkData);
                 }
             }
         }
     }
+
+    await closeDatabase();
 }
