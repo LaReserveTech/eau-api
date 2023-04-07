@@ -25,7 +25,7 @@ export default async (server: TServer) => {
             throw new HttpError.NotFound("Network not found.");
         }
 
-        const cities = await CityModel.find({ networks: network._id });
+        const cities = await CityModel.find({ networks: network._id }).populate("networks");
         reply.send(cities);
     });
 };
